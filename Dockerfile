@@ -15,7 +15,9 @@ RUN apk --no-cache --update add \
     libmcrypt-dev \
     openssh-client \
     freetype-dev \
-    $PHPIZE_DEPS
+    $PHPIZE_DEPS && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/*
 
 # Configure PHP extensions
 RUN docker-php-ext-configure json && \
@@ -73,7 +75,9 @@ RUN echo "display_errors = On" >> $PHP_INI_DIR/conf.d/xdebug.ini
 RUN sed -i -e "s/pm.max_children = 5/pm.max_children = 30/g" /usr/local/etc/php-fpm.d/www.conf
 
 # Install git
-RUN apk add --update --no-cache git
+RUN apk add --update --no-cache git && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/*
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
@@ -81,7 +85,10 @@ RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/lo
 # Install npm and yarn
 
 # Replace shell with bash so we can source files
-RUN apk add --update --no-cache bash
+RUN apk add --update --no-cache bash && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/*
+
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 # https://github.com/mhart/alpine-node/blob/master/Dockerfile
@@ -141,16 +148,17 @@ RUN npm install yarn -g
 RUN adduser -D -u 1000 php
 
 # Install rsync
-RUN apk add --update rsync
+RUN apk add --update rsync && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/*
 
 # Install mysql client
-RUN apk add --update mysql-client
+RUN apk add --update mysql-client && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/*
 
 RUN mkdir -p /home/php/.ssh
 RUN chmod 700 /home/php/.ssh
 
 RUN chown -R php.php /home/php
-
-RUN rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/*
 
