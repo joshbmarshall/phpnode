@@ -33,6 +33,7 @@ RUN docker-php-ext-configure json && \
     docker-php-ext-configure pdo && \
     docker-php-ext-configure pdo_sqlite && \
     docker-php-ext-configure pdo_mysql && \
+    docker-php-ext-configure mysql && \
     docker-php-ext-configure mysqli && \
     docker-php-ext-configure opcache && \
     docker-php-ext-configure iconv && \
@@ -59,6 +60,7 @@ RUN docker-php-ext-install json \
     pdo \
     pdo_sqlite \
     pdo_mysql \
+    mysql \
     mysqli \
     opcache \
     curl \
