@@ -95,9 +95,28 @@ RUN apk add --update --no-cache bash && \
 
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
+# Create user 1000
+RUN adduser -D -u 1000 php
+
+# Install rsync
+RUN apk add --update rsync && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/*
+
+# Install mysql client
+RUN apk add --update mysql-client && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/*
+
+# Create home dir for php user
+RUN mkdir -p /home/php/.ssh
+RUN chmod 700 /home/php/.ssh
+
+RUN chown -R php.php /home/php
+
 # https://github.com/mhart/alpine-node/blob/master/Dockerfile
 
-ENV VERSION=v8.9.4 NPM_VERSION=5 YARN_VERSION=latest
+ENV VERSION=v8.10.0 NPM_VERSION=5 YARN_VERSION=latest
 
 ENV CONFIG_FLAGS="" DEL_PKGS="libstdc++" RM_DIRS=/usr/include
 
@@ -147,22 +166,4 @@ RUN apk add --no-cache curl make gcc g++ python linux-headers binutils-gold gnup
     /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts
 
 RUN npm install yarn -g
-
-# Create user 1000
-RUN adduser -D -u 1000 php
-
-# Install rsync
-RUN apk add --update rsync && \
-    rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/*
-
-# Install mysql client
-RUN apk add --update mysql-client && \
-    rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/*
-
-RUN mkdir -p /home/php/.ssh
-RUN chmod 700 /home/php/.ssh
-
-RUN chown -R php.php /home/php
 
