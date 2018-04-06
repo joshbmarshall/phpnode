@@ -116,7 +116,7 @@ RUN chown -R php.php /home/php
 
 # https://github.com/mhart/alpine-node/blob/master/Dockerfile
 
-ENV VERSION=v8.10.0 NPM_VERSION=5 YARN_VERSION=latest
+ENV VERSION=v8.11.1 NPM_VERSION=5 YARN_VERSION=latest
 
 ENV CONFIG_FLAGS="" DEL_PKGS="libstdc++" RM_DIRS=/usr/include
 
