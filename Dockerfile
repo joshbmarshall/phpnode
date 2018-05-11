@@ -116,9 +116,9 @@ RUN chown -R php.php /home/php
 
 # https://github.com/mhart/alpine-node/blob/master/Dockerfile
 
-ENV VERSION=v8.11.1 NPM_VERSION=5 YARN_VERSION=latest
+ENV VERSION=v8.11.1 NPM_VERSION=5.7 YARN_VERSION=latest
 
-ENV CONFIG_FLAGS="" DEL_PKGS="libstdc++" RM_DIRS=/usr/include
+ENV CONFIG_FLAGS="" DEL_PKGS="libstdc++" RM_DIRS=""
 
 RUN apk add --no-cache curl make gcc g++ python linux-headers binutils-gold gnupg libstdc++ && \
   for server in pgp.mit.edu keyserver.pgp.com ha.pool.sks-keyservers.net; do \
@@ -166,4 +166,12 @@ RUN apk add --no-cache curl make gcc g++ python linux-headers binutils-gold gnup
     /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts
 
 RUN npm install yarn -g
+
+RUN apk add --update --no-cache       \
+ build-base \
+ libstdc++ \
+ make gcc g++ python git  \
+ postgresql-client        \
+ bash \
+ libjpeg-turbo-dev cairo-dev pango
 
