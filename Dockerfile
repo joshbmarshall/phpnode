@@ -16,11 +16,8 @@ RUN apk --no-cache --update add \
     openssh-client \
     freetype-dev \
     $PHPIZE_DEPS && \
-    rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/*
-
-# Configure PHP extensions
-RUN docker-php-ext-configure json && \
+    # Configure PHP extensions
+    docker-php-ext-configure json && \
     docker-php-ext-configure bcmath && \
     docker-php-ext-configure curl && \
     docker-php-ext-configure ctype && \
@@ -42,10 +39,9 @@ RUN docker-php-ext-configure json && \
     docker-php-ext-configure mcrypt && \
     docker-php-ext-configure xml && \
     docker-php-ext-configure phar && \
-    docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
-    
-# Build and install PHP extensions
-RUN docker-php-ext-install json \
+    docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
+    # Build and install PHP extensions
+    docker-php-ext-install json \
     session \
     bcmath \
     ctype \
@@ -69,9 +65,12 @@ RUN docker-php-ext-install json \
     sockets \
     xml  \
     phar \
-    gd
-
-RUN pecl install -f xdebug-2.5.5
+    gd && \
+    # Install XDebug
+    pecl install -f xdebug-2.5.5 && \
+    apk del $PHPIZE_DEPS && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/*
 
 RUN echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > $PHP_INI_DIR/conf.d/xdebug.ini
 RUN echo "display_errors = On" >> $PHP_INI_DIR/conf.d/xdebug.ini
@@ -96,7 +95,10 @@ RUN apk add --update --no-cache bash && \
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 # Create user 1000
-RUN adduser -D -u 1000 php
+RUN adduser -D -u 1000 php && \
+    mkdir -p /home/php/.ssh && \
+    chmod 700 /home/php/.ssh && \
+    chown -R php.php /home/php
 
 # Install rsync
 RUN apk add --update rsync && \
@@ -108,20 +110,12 @@ RUN apk add --update mysql-client && \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/*
 
-# Create home dir for php user
-RUN mkdir -p /home/php/.ssh
-RUN chmod 700 /home/php/.ssh
+# https://github.com/mhart/alpine-node/blob/8/Dockerfile
 
-RUN chown -R php.php /home/php
-
-# https://github.com/mhart/alpine-node/blob/master/Dockerfile
-
-ENV VERSION=v8.11.1 NPM_VERSION=5.7 YARN_VERSION=latest
-
-ENV CONFIG_FLAGS="" DEL_PKGS="libstdc++" RM_DIRS=""
+ENV VERSION=v8.11.1 NPM_VERSION=5 YARN_VERSION=latest
 
 RUN apk add --no-cache curl make gcc g++ python linux-headers binutils-gold gnupg libstdc++ && \
-  for server in pgp.mit.edu keyserver.pgp.com ha.pool.sks-keyservers.net; do \
+  for server in pool.sks-keyservers.net keyserver.pgp.com ha.pool.sks-keyservers.net; do \
     gpg --keyserver $server --recv-keys \
       94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
       FD3A5288F042B6850C66B31F09FE44734EB7990E \
@@ -147,7 +141,7 @@ RUN apk add --no-cache curl make gcc g++ python linux-headers binutils-gold gnup
     fi; \
     find /usr/lib/node_modules/npm -name test -o -name .bin -type d | xargs rm -rf; \
     if [ -n "$YARN_VERSION" ]; then \
-      for server in pgp.mit.edu keyserver.pgp.com ha.pool.sks-keyservers.net; do \
+      for server in pool.sks-keyservers.net keyserver.pgp.com ha.pool.sks-keyservers.net; do \
         gpg --keyserver $server --recv-keys \
           6A010C5166006599AA17F08146C2130DFD2497F5 && break; \
       done && \
@@ -164,14 +158,4 @@ RUN apk add --no-cache curl make gcc g++ python linux-headers binutils-gold gnup
   rm -rf ${RM_DIRS} /node-${VERSION}* /usr/share/man /tmp/* /var/cache/apk/* \
     /root/.npm /root/.node-gyp /root/.gnupg /usr/lib/node_modules/npm/man \
     /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts
-
-RUN npm install yarn -g
-
-RUN apk add --update --no-cache       \
- build-base \
- libstdc++ \
- make gcc g++ python git  \
- postgresql-client        \
- bash \
- libjpeg-turbo-dev cairo-dev pango
 
