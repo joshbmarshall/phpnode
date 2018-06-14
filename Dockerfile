@@ -13,6 +13,7 @@ RUN apk --no-cache --update add \
     libjpeg-turbo-dev \
     libwebp-dev \
     libmcrypt-dev \
+    openssl-dev \
     openssh-client \
     freetype-dev \
     $PHPIZE_DEPS && \
@@ -68,7 +69,7 @@ RUN apk --no-cache --update add \
     gd && \
     # Install XDebug
     pecl install -f xdebug-2.5.5 && \
-    apk del $PHPIZE_DEPS && \
+    apk del openssl-dev $PHPIZE_DEPS && \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/*
 
@@ -112,7 +113,7 @@ RUN apk add --update mysql-client && \
 
 # https://github.com/mhart/alpine-node/blob/8/Dockerfile
 
-ENV VERSION=v8.11.1 NPM_VERSION=5 YARN_VERSION=latest
+ENV VERSION=v8.11.3 NPM_VERSION=5 YARN_VERSION=latest
 
 RUN apk add --no-cache curl make gcc g++ python linux-headers binutils-gold gnupg libstdc++ && \
   for server in pool.sks-keyservers.net keyserver.pgp.com ha.pool.sks-keyservers.net; do \
