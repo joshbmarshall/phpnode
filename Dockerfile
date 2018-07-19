@@ -69,12 +69,14 @@ RUN apk --no-cache --update add \
     gd && \
     # Install XDebug
     pecl install -f xdebug-2.5.5 && \
-    apk del openssl-dev $PHPIZE_DEPS && \
+    echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > $PHP_INI_DIR/conf.d/xdebug.ini && \
+    echo "display_errors = On" >> $PHP_INI_DIR/conf.d/xdebug.ini && \
+    # Clean up dev packages
+    apk del $PHPIZE_DEPS \
+    openssl-dev \
+    && \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/*
-
-RUN echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > $PHP_INI_DIR/conf.d/xdebug.ini
-RUN echo "display_errors = On" >> $PHP_INI_DIR/conf.d/xdebug.ini
 
 RUN sed -i -e "s/pm.max_children = 5/pm.max_children = 30/g" /usr/local/etc/php-fpm.d/www.conf
 
@@ -91,9 +93,9 @@ RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/lo
 # Replace shell with bash so we can source files
 RUN apk add --update --no-cache bash && \
     rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/*
-
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+    rm -rf /var/cache/apk/* && \
+    rm /bin/sh && \
+    ln -s /bin/bash /bin/sh
 
 # Create user 1000
 RUN adduser -D -u 1000 php && \
@@ -135,6 +137,9 @@ RUN apk add --no-cache curl make gcc g++ python linux-headers binutils-gold gnup
   ./configure --prefix=/usr ${CONFIG_FLAGS} && \
   make -j$(getconf _NPROCESSORS_ONLN) && \
   make install && \
+  cd .. && \
+  rm -fr node-${VERSION} && \
+  rm node-${VERSION}.tar.xz && \
   cd / && \
   if [ -z "$CONFIG_FLAGS" ]; then \
     if [ -n "$NPM_VERSION" ]; then \
