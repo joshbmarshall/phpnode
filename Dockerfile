@@ -13,7 +13,7 @@ RUN apk --no-cache --update add \
     libjpeg-turbo-dev \
     libwebp-dev \
     libmcrypt-dev \
-    openssl-dev \
+    libressl-dev \
     openssh-client \
     freetype-dev \
     $PHPIZE_DEPS && \
@@ -73,7 +73,7 @@ RUN apk --no-cache --update add \
     echo "display_errors = On" >> $PHP_INI_DIR/conf.d/xdebug.ini && \
     # Clean up dev packages
     apk del $PHPIZE_DEPS \
-    openssl-dev \
+    libressl-dev \
     && \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/*
@@ -115,7 +115,7 @@ RUN apk add --update mysql-client && \
 
 # https://github.com/mhart/alpine-node/blob/8/Dockerfile
 
-ENV VERSION=v8.11.3 NPM_VERSION=5 YARN_VERSION=latest
+ENV VERSION=v8.12.0 NPM_VERSION=5 YARN_VERSION=latest
 
 RUN apk add --no-cache curl make gcc g++ python linux-headers binutils-gold gnupg libstdc++ && \
   for server in pool.sks-keyservers.net keyserver.pgp.com ha.pool.sks-keyservers.net; do \
