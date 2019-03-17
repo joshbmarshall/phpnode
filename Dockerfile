@@ -1,4 +1,4 @@
-FROM php:7.2-fpm-alpine
+FROM php:7.3-fpm-alpine
 
 COPY php.ini /usr/local/etc/php/
 
@@ -14,6 +14,7 @@ RUN apk --no-cache --update add \
     libwebp-dev \
     libmcrypt-dev \
     libressl-dev \
+    libzip-dev \
     openssh-client \
     freetype-dev \
     icu-dev \
@@ -67,9 +68,9 @@ RUN apk --no-cache --update add \
     phar \
     gd && \
     # Install XDebug
-    pecl install -f xdebug-2.6.1 && \
-    echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > $PHP_INI_DIR/conf.d/xdebug.ini && \
-    echo "display_errors = On" >> $PHP_INI_DIR/conf.d/xdebug.ini && \
+    # pecl install -f xdebug-2.7.0beta1 && \
+    # echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > $PHP_INI_DIR/conf.d/xdebug.ini && \
+    # echo "display_errors = On" >> $PHP_INI_DIR/conf.d/xdebug.ini && \
     # Clean up dev packages
     apk del $PHPIZE_DEPS \
     libressl-dev \
@@ -77,7 +78,9 @@ RUN apk --no-cache --update add \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/*
 
-RUN sed -i -e "s/pm.max_children = 5/pm.max_children = 30/g" /usr/local/etc/php-fpm.d/www.conf
+#RUN sed -i -e "s/pm.max_children = 5/pm.max_children = 30/g" /usr/local/etc/php-fpm.d/www.conf
+
+RUN sed -i -e "s/\;log_level = notice/log_level = debug/g" /usr/local/etc/php-fpm.conf
 
 # Install git
 RUN apk add --update --no-cache git && \
@@ -109,6 +112,14 @@ RUN apk add --update rsync && \
 RUN apk add --update mysql-client && \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/*
+
+# Install nodejs, npm and yarn
+#RUN curl -L https://git.io/n-install | N_PREFIX=/n bash -s -- -y \
+# && ln -s /n/bin/node /usr/bin/node \
+# && ln -s /n/bin/npm /usr/bin/npm \
+# && curl -0 -L https://npmjs.com/install.sh | clean=no sh \
+# && npm install --global yarn \
+# && ln -s /n/bin/yarn /usr/bin/yarn
 
 # Install nodejs, npm and yarn
 RUN apk add --update nodejs npm yarn && \
