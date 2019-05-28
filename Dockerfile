@@ -126,5 +126,7 @@ RUN apk add --update nodejs npm yarn && \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/*
 
-# Install python and compilers to be able to make node-gyp
-#RUN apk --no-cache add python cairo-dev make g++
+# Install vim
+RUN apk add --update vim && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/*
