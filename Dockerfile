@@ -66,53 +66,30 @@ RUN apk --no-cache --update add \
     sockets \
     xml  \
     phar \
-    gd && \
-    # Install XDebug
-    # pecl install -f xdebug-2.7.0beta1 && \
-    # echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > $PHP_INI_DIR/conf.d/xdebug.ini && \
-    # echo "display_errors = On" >> $PHP_INI_DIR/conf.d/xdebug.ini && \
-    # Clean up dev packages
-    apk del $PHPIZE_DEPS \
+    gd \
+# Clean up dev packages
+ && apk del $PHPIZE_DEPS \
     libressl-dev \
-    && \
-    rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/*
-
 #RUN sed -i -e "s/pm.max_children = 5/pm.max_children = 30/g" /usr/local/etc/php-fpm.d/www.conf
-
-RUN sed -i -e "s/\;log_level = notice/log_level = debug/g" /usr/local/etc/php-fpm.conf
-
+ && sed -i -e "s/\;log_level = notice/log_level = debug/g" /usr/local/etc/php-fpm.conf \
 # Install git
-RUN apk add --update --no-cache git && \
-    rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/*
-
+ && apk add --update --no-cache git \
 # Install composer
-RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
-
+ && curl -sS https://getcomposer.org/installer | php \
+ && mv composer.phar /usr/local/bin/composer \
 # Replace shell with bash so we can source files
-RUN apk add --update --no-cache bash && \
-    rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/* && \
+ && apk add --update --no-cache bash && \
     rm /bin/sh && \
-    ln -s /bin/bash /bin/sh
-
+    ln -s /bin/bash /bin/sh \
 # Create user 1000
-RUN adduser -D -u 1000 php && \
+ && adduser -D -u 1000 php && \
     mkdir -p /home/php/.ssh && \
     chmod 700 /home/php/.ssh && \
-    chown -R php.php /home/php
-
+    chown -R php.php /home/php \
 # Install rsync
-RUN apk add --update rsync && \
-    rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/*
-
+ && apk add --update rsync \
 # Install mysql client
-RUN apk add --update mysql-client && \
-    rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/*
-
+ && apk add --update mysql-client \
 # Install nodejs, npm and yarn
 #RUN curl -L https://git.io/n-install | N_PREFIX=/n bash -s -- -y \
 # && ln -s /n/bin/node /usr/bin/node \
@@ -120,13 +97,9 @@ RUN apk add --update mysql-client && \
 # && curl -0 -L https://npmjs.com/install.sh | clean=no sh \
 # && npm install --global yarn \
 # && ln -s /n/bin/yarn /usr/bin/yarn
-
 # Install nodejs, npm and yarn
-RUN apk add --update nodejs npm yarn && \
-    rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/*
-
+ && apk add --update nodejs npm yarn \
 # Install vim
-RUN apk add --update vim && \
-    rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/*
+ && apk add --update vim \
+ && rm -rf /tmp/* \
+ && rm -rf /var/cache/apk/*
