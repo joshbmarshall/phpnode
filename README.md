@@ -5,4 +5,4 @@ This docker image contains php-fpm 7.3 on Alpine Linux with the latest stable no
 This is meant for development, so has extra packages like rsync, git and xdebug installed.
 
 To build:
-	docker build -t joshbmarshall/phpnode7 .
+	docker build --cpu-period 50000 --cpu-quota=25000 -t joshbmarshall/phpnode7 .
