@@ -17,6 +17,7 @@ RUN apk --no-cache --update add \
     libzip-dev \
     openssh-client \
     freetype-dev \
+    oniguruma-dev \
     icu-dev \
     $PHPIZE_DEPS && \
     # Configure PHP extensions
