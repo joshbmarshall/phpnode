@@ -6,6 +6,7 @@ COPY php.ini /usr/local/etc/php/
 RUN apk --no-cache --update add \
     libxml2-dev \
     sqlite-dev \
+    postgresql-dev \
     curl-dev \
     gmp \
     gmp-dev \
@@ -34,6 +35,7 @@ RUN apk --no-cache --update add \
     docker-php-ext-configure zip && \
     docker-php-ext-configure pdo && \
     docker-php-ext-configure pdo_sqlite && \
+    docker-php-ext-configure pdo_pgsql && \
     docker-php-ext-configure pdo_mysql && \
     docker-php-ext-configure mysqli && \
     docker-php-ext-configure opcache && \
@@ -58,6 +60,7 @@ RUN apk --no-cache --update add \
     zip \
     pdo \
     pdo_sqlite \
+    pdo_pgsql \
     pdo_mysql \
     mysqli \
     opcache \
